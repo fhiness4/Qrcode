@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.container {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    width: 90%;
+    max-width: 500px;
+    text-align: center;
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 30px;
+}
+
+.input-group {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+input {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: border 0.3s;
+}
+
+input:focus {
+    outline: none;
+    border-color: #4CAF50;
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.qr-container {
+    margin: 20px 0;
+    padding: 20px;
+    border: 1px dashed #ddd;
+    border-radius: 5px;
+    min-height: 256px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.download-group {
+    display: flex;
+    gap: 10px;
+}
+
+select {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>QR Code Generator By QUADRI</h1>
+        <div class="input-group">
+            <input type="text" id="qr-text" placeholder="Enter text or URL">
+            <button id="generate-btn">Generate QR Code</button>
+        </div>
+        <div class="qr-container">
+            <canvas id="qr-code"></canvas>
+        </div>
+        <div class="download-group">
+            <button id="download-btn" disabled>Download QR Code</button>
+            <select id="format-select">
+                <option value="png">PNG</option>
+                <option value="jpeg">JPEG</option>
+                <option value="webp">WebP</option>
+            </select>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+    const qrText = document.getElementById('qr-text');
+    const generateBtn = document.getElementById('generate-btn');
+    const downloadBtn = document.getElementById('download-btn');
+    const formatSelect = document.getElementById('format-select');
+    const qrCanvas = document.getElementById('qr-code');
+    
+    let qr = new QRious({
+        element: qrCanvas,
+        size: 256,
+        value: 'https://example.com'
+    });
+    
+    generateBtn.addEventListener('click', function() {
+        const text = qrText.value.trim();
+        
+        if (text) {
+            qr.set({
+                value: text
+            });
+            downloadBtn.disabled = false;
+        } else {
+            alert('Please enter some text or URL');
+        }
+    });
+    
+    downloadBtn.addEventListener('click', function() {
+        const format = formatSelect.value;
+        const text = qrText.value.trim() || 'qr-code';
+        const filename = text.replace(/[^a-z0-9]/gi, '-').toLowerCase() + '.' + format;
+        
+        // Create a temporary link to download the QR code
+        const link = document.createElement('a');
+        link.download = filename;
+        link.href = qrCanvas.toDataURL('image/' + format);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    });
+    
+    // Allow generating QR code by pressing Enter
+    qrText.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            generateBtn.click();
+        }
+    });
+});
+    </script>
+</body>
+</html>
